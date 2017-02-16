@@ -17,51 +17,69 @@ public class Reset {
 
 		this.plugin = plugin;
 	}
-
+	
 	public void spawnPlatform(String dimname) {
-		World world = Sponge.getServer().getWorld(dimname).get();
-		WorldProperties prop = world.getWorldStorage().getWorldProperties();
-		int x = prop.getSpawnPosition().getX();
-		int y = prop.getSpawnPosition().getY();
-		int z = prop.getSpawnPosition().getZ();
+		if(Sponge.getServer().getWorld(dimname).isPresent())
+		{
+			World world = Sponge.getServer().getWorld(dimname).get();
+			WorldProperties prop = world.getWorldStorage().getWorldProperties();
+			int x = prop.getSpawnPosition().getX();
+			int y = prop.getSpawnPosition().getY();
+			int z = prop.getSpawnPosition().getZ();
 
-		
-		
-				//chunkLoader.getMainChunk().add(x, y, z);
-		
-		Vector3i[] plat = new Vector3i[9];
-		for (int i = 0; i <= 9; i++) {
+			Vector3i[] plat = new Vector3i[9];
+			for (int i = 0; i <= 9; i++) {
 
-			plat[0] = new Vector3i(x, y - 2, z);
-			plat[1] = new Vector3i(x, y - 2, z + 1);
-			plat[7] = new Vector3i(x, y - 2, z - 1);
-			plat[3] = new Vector3i(x - 1, y - 2, z + 1);
-			plat[4] = new Vector3i(x - 1, y - 2, z);
-			plat[6] = new Vector3i(x - 1, y - 2, z - 1);
-			plat[5] = new Vector3i(x + 1, y - 2, z);
-			plat[2] = new Vector3i(x + 1, y - 2, z + 1);
-			plat[8] = new Vector3i(x + 1, y - 2, z - 1);
-			
-			
+				plat[0] = new Vector3i(x, y - 2, z);
+				plat[1] = new Vector3i(x, y - 2, z + 1);
+				plat[7] = new Vector3i(x, y - 2, z - 1);
+				plat[3] = new Vector3i(x - 1, y - 2, z + 1);
+				plat[4] = new Vector3i(x - 1, y - 2, z);
+				plat[6] = new Vector3i(x - 1, y - 2, z - 1);
+				plat[5] = new Vector3i(x + 1, y - 2, z);
+				plat[2] = new Vector3i(x + 1, y - 2, z + 1);
+				plat[8] = new Vector3i(x + 1, y - 2, z - 1);
+
+			}
+
+			for (Vector3i v : plat) {
+
+				world.getLocation(v).setBlockType(BlockTypes.BEDROCK,
+
+						Cause.source(Sponge.getPluginManager().fromInstance(plugin).get()).build());
+
+			}
 		}
-		
-		for (Vector3i v : plat) {
-			
-			
-			world.getLocation(v).setBlockType(BlockTypes.BEDROCK,
-					Cause.source(Sponge.getPluginManager().fromInstance(plugin).get()).build());
-			
-			
-		}
+
 
 	}
-	
 
 	public void deleteRegions(String dim) {
-		String path2 = Sponge.getGame().getGameDirectory()+ File.separator + "world" + File.separator + dim + File.separator + "region";
-		File location = new File(path2);
+		String path = Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + dim;
+		String path2 = path + File.separator + "data";
+				
+		File location2 = new File(path2);
+		if (location2.isDirectory()) {
+			String[] entries = location2.list();
+			for (String s : entries) {
+				File currentFile = new File(location2.getPath(), s);
+				if (currentFile.getName().equals("villages_end.dat")
+						|| currentFile.getName().equals("villages_nether.dat")
+						|| currentFile.getName().equals("EndCity.dat")) {
+					currentFile.delete();
+				}
 
-		
+			}
+
+		}
+		String path3 = path + File.separator + "region";
+		resetUtil(path3);
+
+	}
+
+	private void resetUtil(String path) {
+		File location = new File(path);
+
 		if (location.isDirectory()) {
 			String[] entries = location.list();
 			for (String s : entries) {

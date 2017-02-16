@@ -4,25 +4,34 @@ import java.io.File;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.world.Chunk;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.gen.WorldGeneratorModifier;
+import org.spongepowered.api.world.storage.WorldProperties;
+
 import com.google.inject.Inject;
 
 import DimReseter.Commands.Register;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "dimreseter", name = "DimReseter", version = "1.0.0")
+@Plugin(id = "dimreseter", name = "DimReseter")
 public class DimReseter {
 
 	@Inject
@@ -45,6 +54,9 @@ public class DimReseter {
 	Date dNow = new Date();
 	SimpleDateFormat ft = new SimpleDateFormat("dd");
 
+	private Boolean voids;
+	List<String> listVoidWorlds = new ArrayList<String>();
+
 	Reset r = new Reset(this);
 
 	@Listener
@@ -54,6 +66,8 @@ public class DimReseter {
 
 		listRestartDims = mainConfig.getStringlist("EveryRestartReset");
 		listMonthlyDims = mainConfig.getStringlist("EveryMonthReset");
+		listVoidWorlds = mainConfig.getVoidlist();
+		voids = mainConfig.getNodeChildBoolean("CustomGenerators", "Enabled");
 
 	}
 
@@ -65,7 +79,7 @@ public class DimReseter {
 	@Listener
 	public void gameStart(GameAboutToStartServerEvent event) {
 		// Can not spawn platform in this event. Worlds are not loaded.
-	
+
 		if ((mainConfig.getNodeInt("ResetDay") == (Integer.valueOf(ft.format(dNow)))
 				&& !(mainConfig.getNodeBoolean("ResetToday")))) {
 			log.info("Starting Monthly Dim Resets");
@@ -75,23 +89,38 @@ public class DimReseter {
 			}
 			mainConfig.setValueBoolean("ResetToday", true);
 			mainConfig.saveConfig();
-		} else if(mainConfig.getNodeInt("ResetDay") != Integer.valueOf(ft.format(dNow)))
-		{
+		} else if (mainConfig.getNodeInt("ResetDay") != Integer.valueOf(ft.format(dNow))) {
 			mainConfig.setValueBoolean("ResetToday", false);
 		}
 
 		for (String dim : listRestartDims) {
-
+			
 			r.deleteRegions(dim);
-
+			
 		}
 
 	}
 
 	@Listener
 	public void gameStarting(GameStartingServerEvent event) {
+	
+		
+		
+
+	}
+	@Listener
+	public void gameStarted(GameStartedServerEvent event) {
+		if (voids == true) {
+			for (String dim : listVoidWorlds) {
+
+				setCustomModifier(dim);
+			}
+		}
+		
 		for (String dim : listRestartDims) {
+
 			r.spawnPlatform(dim);
+
 		}
 		for (String dim : listMonthlyDims) {
 			r.spawnPlatform(dim);
@@ -99,8 +128,48 @@ public class DimReseter {
 
 	}
 
+	private void setCustomModifier(String input) {
+
+		String[] w = input.split("\\|");
+
+		
+		try
+		{
+			World world = Sponge.getServer().getWorld(w[0]).get();
+			Sponge.getServer().unloadWorld(world);
+			WorldProperties properties = Sponge.getServer().getWorldProperties(w[0]).get();
+			Collection<WorldGeneratorModifier> gen = new ArrayList<WorldGeneratorModifier>();
+			
+			try {
+				WorldGeneratorModifier e = Sponge.getRegistry().getType(WorldGeneratorModifier.class, w[1]).get();
+				gen.add(e);
+				properties.getGeneratorModifiers().clear();
+				properties.setGeneratorModifiers(gen);
+				Sponge.getServer().loadWorld(properties);
+			} catch (NoSuchElementException e) {
+				log.error(w[1]+" is not a valid WorldGenerator");
+			}
+		}
+		catch(NoSuchElementException e)
+		{
+			log.error(w[0]+" is not a valid World");
+		}
+		
+
+		
+
+	}
+
 	public Logger getLogger() {
 		return log;
+	}
+
+	public List<String> getVoidList() {
+		return listVoidWorlds;
+	}
+
+	public Boolean getVoid() {
+		return voids;
 	}
 
 }
