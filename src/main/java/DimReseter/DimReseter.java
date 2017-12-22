@@ -34,7 +34,7 @@ import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "dimreseter", name = "DimReseter", version = "1.0.2", dependencies = @Dependency(id = "griefprevention", optional = true))
+@Plugin(id = "dimreseter", name = "DimReseter", version = "1.12-1.0.2", dependencies = @Dependency(id = "griefprevention", optional = true))
 public class DimReseter {
 
 	@Inject
@@ -69,7 +69,7 @@ public class DimReseter {
 	@Listener
 	public void preInitialization(GamePreInitializationEvent event) {
 
-		mainConfig = new Config(this, defaultConfig, mainManager, "DimReseter.conf");
+		mainConfig = new Config(this, defaultConfig, mainManager, "dimreseter.conf");
 
 		listRestartDims = mainConfig.getStringlist("EveryRestartReset");
 		listMonthlyDims = mainConfig.getStringlist("EveryMonthReset");

@@ -22,6 +22,7 @@ public class Config {
 	File activeConfig;
 	CommentedConfigurationNode rootnode;
 	ConfigurationLoader<CommentedConfigurationNode> configManager;
+	
 
 	List<String> listRestartDims = new ArrayList<String>(Arrays.asList("DIM1"));
 	List<String> listCustomGen = new ArrayList<String>(Arrays.asList("DIM1|WorldGenerator"));
@@ -32,7 +33,7 @@ public class Config {
 		this.defaultConfig = defaultConfig;
 		this.configManager = configManager;
 
-		activeConfig = new File(defaultConfig.toFile(), "DimReseter.conf");
+		activeConfig = new File(defaultConfig.toFile(), fileName);
 
 		configManager = HoconConfigurationLoader.builder().setFile(activeConfig).build();
 
