@@ -8,19 +8,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStartingServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.world.Chunk;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -28,10 +30,12 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import com.google.inject.Inject;
 
 import DimReseter.Commands.Register;
+import me.ryanhamshire.griefprevention.GriefPrevention;
+import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "dimreseter", name = "DimReseter")
+@Plugin(id = "dimreseter", name = "DimReseter", version = "1.0.2", dependencies = @Dependency(id = "griefprevention", optional = true))
 public class DimReseter {
 
 	@Inject
@@ -47,6 +51,10 @@ public class DimReseter {
 
 	File location;
 	Config mainConfig;
+
+	// Used to clear claims from reset dimensions
+	private GriefPreventionApi gpApi;
+	private Boolean gpPresent = false;
 
 	List<String> listRestartDims = new ArrayList<String>();
 	public List<String> listMonthlyDims = new ArrayList<String>();
@@ -76,8 +84,15 @@ public class DimReseter {
 		new Register(this, mainConfig);
 	}
 
-	@Listener
-	public void gameStart(GameAboutToStartServerEvent event) {
+	@Listener(order = Order.LATE)
+	public void onServerStart(GameStartedServerEvent event) throws Exception {
+		Optional<PluginContainer> optGpContainer = Sponge.getPluginManager().getPlugin("griefprevention");
+		if (optGpContainer.isPresent()) {
+			this.gpApi = GriefPrevention.getApi();
+			log.info("Loaded GriefPrevention API");
+			gpPresent = true;
+
+		}
 		// Can not spawn platform in this event. Worlds are not loaded.
 
 		if ((mainConfig.getNodeInt("ResetDay") == (Integer.valueOf(ft.format(dNow)))
@@ -85,6 +100,7 @@ public class DimReseter {
 			log.info("Starting Monthly Dim Resets");
 			for (String dim : listMonthlyDims) {
 				r.deleteRegions(dim);
+				r.clearClaims(dim, gpPresent);
 				log.info(dim + " has been reset");
 			}
 			mainConfig.setValueBoolean("ResetToday", true);
@@ -94,29 +110,19 @@ public class DimReseter {
 		}
 
 		for (String dim : listRestartDims) {
-			
+
 			r.deleteRegions(dim);
-			
+			r.clearClaims(dim, gpPresent);
+
 		}
 
-	}
-
-	@Listener
-	public void gameStarting(GameStartingServerEvent event) {
-	
-		
-		
-
-	}
-	@Listener
-	public void gameStarted(GameStartedServerEvent event) {
 		if (voids == true) {
 			for (String dim : listVoidWorlds) {
 
 				setCustomModifier(dim);
 			}
 		}
-		
+
 		for (String dim : listRestartDims) {
 
 			r.spawnPlatform(dim);
@@ -128,18 +134,21 @@ public class DimReseter {
 
 	}
 
+	@Listener
+	public void gameStarted(GameStartedServerEvent event) {
+
+	}
+
 	private void setCustomModifier(String input) {
 
 		String[] w = input.split("\\|");
 
-		
-		try
-		{
+		try {
 			World world = Sponge.getServer().getWorld(w[0]).get();
 			Sponge.getServer().unloadWorld(world);
 			WorldProperties properties = Sponge.getServer().getWorldProperties(w[0]).get();
 			Collection<WorldGeneratorModifier> gen = new ArrayList<WorldGeneratorModifier>();
-			
+
 			try {
 				WorldGeneratorModifier e = Sponge.getRegistry().getType(WorldGeneratorModifier.class, w[1]).get();
 				gen.add(e);
@@ -147,21 +156,25 @@ public class DimReseter {
 				properties.setGeneratorModifiers(gen);
 				Sponge.getServer().loadWorld(properties);
 			} catch (NoSuchElementException e) {
-				log.error(w[1]+" is not a valid WorldGenerator");
+				log.error(w[1] + " is not a valid WorldGenerator");
 			}
+		} catch (NoSuchElementException e) {
+			log.error(w[0] + " is not a valid World");
 		}
-		catch(NoSuchElementException e)
-		{
-			log.error(w[0]+" is not a valid World");
-		}
-		
-
-		
 
 	}
 
 	public Logger getLogger() {
 		return log;
+	}
+
+	public GriefPreventionApi getGPApi() {
+		return gpApi;
+	}
+
+	public Cause getCause() {
+
+		return Cause.source(this).build();
 	}
 
 	public List<String> getVoidList() {
