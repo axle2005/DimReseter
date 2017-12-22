@@ -16,7 +16,6 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -170,11 +169,6 @@ public class DimReseter {
 
 	public GriefPreventionApi getGPApi() {
 		return gpApi;
-	}
-
-	public Cause getCause() {
-
-		return Cause.source(this).build();
 	}
 
 	public List<String> getVoidList() {

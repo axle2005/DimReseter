@@ -16,5 +16,5 @@ repositories {
 
 dependencies {
     compile ('org.spongepowered:spongeapi:7.0.0-SNAPSHOT')
-    compilefiles('libs/griefprevention-1.10.2-4.0.1.481-api.jar');
+    compile ('me.ryanhamshire:griefprevention:1.12.2-4.3.0.509:api');
 }

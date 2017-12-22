@@ -55,9 +55,7 @@ public class Reset {
 
 			for (Vector3i v : plat) {
 
-				world.getLocation(v).setBlockType(BlockTypes.BEDROCK,
-
-						Cause.source(Sponge.getPluginManager().fromInstance(plugin).get()).build());
+				world.getLocation(v).setBlockType(BlockTypes.BEDROCK);
 
 			}
 		}
@@ -109,7 +107,7 @@ public class Reset {
 					
 				}
 				for(Claim c : claimData.values()){
-					cm.deleteClaim(c, plugin.getCause());
+					cm.deleteClaim(c, true);
 					
 					
 				}
