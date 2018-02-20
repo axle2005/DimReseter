@@ -15,6 +15,6 @@ repositories {
 }
 
 dependencies {
-    compile ('org.spongepowered:spongeapi:7.0.0-SNAPSHOT')
+    compile ('org.spongepowered:spongeapi:7.1.0-SNAPSHOT')
     compile ('me.ryanhamshire:griefprevention:1.12.2-4.3.0.509:api');
 }
