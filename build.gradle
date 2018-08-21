@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'io.github.axle2005' 
-version = '1.0.2'
+version = '1.2.0'
 description = 'Manages Monthly Dim Resets'
 
 repositories {
@@ -16,5 +16,5 @@ repositories {
 
 dependencies {
     compile ('org.spongepowered:spongeapi:7.1.0-SNAPSHOT')
-    compile ('me.ryanhamshire:griefprevention:1.12.2-4.3.0.509:api');
+    compile ('me.ryanhamshire:griefprevention:1.12.2-4.3.0.584:api')
 }

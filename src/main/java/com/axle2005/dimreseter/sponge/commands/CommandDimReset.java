@@ -9,8 +9,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
@@ -35,7 +33,7 @@ public class CommandDimReset implements CommandExecutor {
 			return CommandResult.empty();
 		} else {
 			//String argOption = arguments.<String>getOne("run|schedule|abort").get();
-			String argDim = arguments.<String>getOne("dimname").get();
+			String argDim = arguments.<String>getOne("DIM").get();
 			
 			Optional<World> world = Sponge.getServer().getWorld(argDim);
 			 
@@ -48,7 +46,7 @@ public class CommandDimReset implements CommandExecutor {
 				Sponge.getServer().unloadWorld(world.get());
 				
 				if (DimReseter.getInstance().isGPPresent()) {
-					ClaimManager cm = DimReseter.getGPApi().getClaimManager(world.get());
+					ClaimManager cm = DimReseter.getInstance().getGPApi().getClaimManager(world.get());
 					for (Claim c : cm.getWorldClaims()) {
 						if(c.isAdminClaim()) {
 							src.sendMessage(Text.of(TextColors.AQUA,"Claim: "+c.getUniqueId()+" has been deleted"));

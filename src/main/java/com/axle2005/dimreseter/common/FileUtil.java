@@ -56,7 +56,7 @@ public class FileUtil {
 		
 		if (DimReseter.getInstance().isGPPresent()) {
 			
-			ClaimManager cm = DimReseter.getGPApi().getClaimManager(world);
+			ClaimManager cm = DimReseter.getInstance().getGPApi().getClaimManager(world);
 			for (Claim cl : cm.getWorldClaims()) {
 				for(Chunk ch : cl.getChunks()) {
 					if(!claimRegions.contains(Region.getRegionFromChunk(ch.getPosition()))) {
@@ -109,6 +109,7 @@ public class FileUtil {
 			}
 
 		}
+		
 	}
 	
 	public static void clearData(String path) {
