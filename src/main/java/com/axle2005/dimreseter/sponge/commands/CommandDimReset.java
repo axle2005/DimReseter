@@ -60,10 +60,12 @@ public class CommandDimReset implements CommandExecutor {
 				FileUtil.clearData(path);
 				Sponge.getServer().loadWorld(world.get().getName());
 				Util.spawnPlatform(world.get().getName());
+				src.sendMessage(Text.of(TextColors.AQUA,"Dimension: "+argDim+" has been reset"));
+				return CommandResult.success();
 			}
 			
 			
-			src.sendMessage(Text.of(TextColors.AQUA,"Dimension: "+argDim+" has been reset"));
+			
 			return CommandResult.empty();
 		}
 
