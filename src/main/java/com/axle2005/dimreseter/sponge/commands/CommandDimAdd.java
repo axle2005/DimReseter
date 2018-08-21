@@ -1,4 +1,4 @@
-package DimReseter.Commands;
+package com.axle2005.dimreseter.sponge.commands;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +14,10 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 
-import DimReseter.Config;
-import DimReseter.DimReseter;
+import com.axle2005.dimreseter.sponge.Config;
+import com.axle2005.dimreseter.sponge.DimReseter;
+
+
 
 
 

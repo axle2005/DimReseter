@@ -1,4 +1,4 @@
-package DimReseter;
+package com.axle2005.dimreseter.sponge;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -26,9 +26,9 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import com.axle2005.dimreseter.sponge.commands.Register;
 import com.google.inject.Inject;
 
-import DimReseter.Commands.Register;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -128,11 +128,11 @@ public class DimReseter {
 
 		for (String dim : listRestartDims) {
 
-			r.spawnPlatform(dim);
+			Util.spawnPlatform(dim);
 
 		}
 		for (String dim : listMonthlyDims) {
-			r.spawnPlatform(dim);
+			Util.spawnPlatform(dim);
 		}
 
 	}
@@ -173,6 +173,10 @@ public class DimReseter {
 
 	public static GriefPreventionApi getGPApi() {
 		return gpApi;
+	}
+	
+	public Boolean isGPPresent() {
+		return gpPresent;
 	}
 
 	public List<String> getVoidList() {

@@ -1,4 +1,4 @@
-package DimReseter;
+package com.axle2005.dimreseter.sponge;
 
 import java.io.File;
 import java.io.IOException;
