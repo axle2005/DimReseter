@@ -34,7 +34,7 @@ import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "dimreseter", name = "DimReseter", version = "1.12-1.0.2", dependencies = @Dependency(id = "griefprevention", optional = true))
+@Plugin(id = "dimreseter", name = "DimReseter", version = "1.12-1.0.2")
 public class DimReseter {
 
 	@Inject
@@ -52,7 +52,7 @@ public class DimReseter {
 	Config mainConfig;
 
 	// Used to clear claims from reset dimensions
-	private GriefPreventionApi gpApi;
+	private static GriefPreventionApi gpApi;
 	private Boolean gpPresent = false;
 
 	List<String> listRestartDims = new ArrayList<String>();
@@ -66,9 +66,13 @@ public class DimReseter {
 
 	Reset r = new Reset(this);
 
+	private static DimReseter instance;
+	
 	@Listener
 	public void preInitialization(GamePreInitializationEvent event) {
 
+		instance = this;
+		
 		mainConfig = new Config(this, defaultConfig, mainManager, "dimreseter.conf");
 
 		listRestartDims = mainConfig.getStringlist("EveryRestartReset");
@@ -167,7 +171,7 @@ public class DimReseter {
 		return log;
 	}
 
-	public GriefPreventionApi getGPApi() {
+	public static GriefPreventionApi getGPApi() {
 		return gpApi;
 	}
 
@@ -177,6 +181,10 @@ public class DimReseter {
 
 	public Boolean getVoid() {
 		return voids;
+	}
+	
+	public static DimReseter getInstance() {
+		return instance;
 	}
 
 }
