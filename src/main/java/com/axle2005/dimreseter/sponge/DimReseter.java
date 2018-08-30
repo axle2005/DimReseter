@@ -66,8 +66,8 @@ public class DimReseter {
 	private static DimReseter instance;
 
 	@Listener
-	public void preInitialization(GamePreInitializationEvent event) {
-
+	public void initialization(GameInitializationEvent event) {
+		
 		instance = this;
 
 		mainConfig = new Config(this, defaultConfig, mainManager, "dimreseter.conf");
@@ -76,11 +76,6 @@ public class DimReseter {
 		listMonthlyDims = mainConfig.getStringlist("EveryMonthReset");
 		listVoidWorlds = mainConfig.getVoidlist();
 		voids = mainConfig.getNodeChildBoolean("CustomGenerators", "Enabled");
-
-	}
-
-	@Listener
-	public void initialization(GameInitializationEvent event) {
 		new Register(this, mainConfig);
 	}
 
