@@ -41,7 +41,7 @@ public class Config {
 
 			rootnode = configManager.load();
 
-			defaults("DimReseter.conf");
+			defaults(fileName);
 
 			saveConfig();
 		}
