@@ -16,8 +16,8 @@ import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
@@ -33,7 +33,8 @@ import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "dimreseter", name = "DimReseter", version = "1.12-1.0.2")
+@Plugin(id = "dimreseter", name = "DimReseter", version = "1.12-1.0.2", dependencies = {
+		@Dependency(id = "griefprevention", optional = true), })
 public class DimReseter {
 
 	@Inject
@@ -64,10 +65,10 @@ public class DimReseter {
 	List<String> listVoidWorlds = new ArrayList<String>();
 
 	private static DimReseter instance;
-
+	
 	@Listener
-	public void preInitialization(GamePreInitializationEvent event) {
-
+	public void initialization(GameInitializationEvent event) {
+		
 		instance = this;
 
 		mainConfig = new Config(this, defaultConfig, mainManager, "dimreseter.conf");
@@ -76,12 +77,11 @@ public class DimReseter {
 		listMonthlyDims = mainConfig.getStringlist("EveryMonthReset");
 		listVoidWorlds = mainConfig.getVoidlist();
 		voids = mainConfig.getNodeChildBoolean("CustomGenerators", "Enabled");
-
-	}
-
-	@Listener
-	public void initialization(GameInitializationEvent event) {
+		
 		new Register(this, mainConfig);
+		
+		
+		
 	}
 
 	@Listener(order = Order.LAST)
@@ -125,7 +125,6 @@ public class DimReseter {
 		for (String dim : listRestartDims) {
 
 			if (Sponge.getServer().getWorld(dim).isPresent()) {
-
 				FileUtil.clearAllRegions(
 						Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "" + dim);
 				FileUtil.clearData(
@@ -194,9 +193,14 @@ public class DimReseter {
 	public Boolean getVoid() {
 		return voids;
 	}
-
+	public Path getConfigPath() {
+		return defaultConfig;
+	}
+	
+	
 	public static DimReseter getInstance() {
 		return instance;
 	}
+	
 
 }

@@ -1,10 +1,12 @@
 plugins {
-    id 'org.spongepowered.plugin' version '0.6'
+    id 'org.spongepowered.plugin' version '0.8.1'
+    id 'maven'
 }
 
 group = 'io.github.axle2005' 
-version = '1.2.0'
+version = "$minecraftVersion-$version"
 description = 'Manages Monthly Dim Resets'
+archivesBaseName = project.name.toLowerCase()
 
 repositories {
     jcenter()
@@ -12,9 +14,16 @@ repositories {
         name = 'Forge'
         url = 'http://files.minecraftforge.net/maven'
     }
+    maven {
+        name = 'bstats'
+        url = 'http://repo.bstats.org/content/repositories/releases/'
+    }
 }
 
 dependencies {
-    compile ('org.spongepowered:spongeapi:7.1.0-SNAPSHOT')
-    compile ('me.ryanhamshire:griefprevention:1.12.2-4.3.0.584:api')
+    compileOnly ("org.spongepowered:spongecommon:$apiVersion:dev") {
+        exclude module: 'testplugins'
+	}
+    compile "org.bstats:bstats-sponge:1.2"
+    compile ("me.ryanhamshire:griefprevention:$minecraftVersion-$griefpreventionVersion:api")
 }

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -46,7 +47,7 @@ public class Util {
 
 			for (Vector3i v : plat) {
 
-				world.getLocation(v).setBlockType(BlockTypes.BEDROCK);
+				world.getLocation(v).setBlockType(BlockTypes.BEDROCK, Cause.source(DimReseter.getInstance()).build());
 
 			}
 		}
@@ -69,7 +70,7 @@ public class Util {
 
 				}
 				for (Claim c : claimData.values()) {
-					cm.deleteClaim(c, true);
+					cm.deleteClaim(c, Cause.source(DimReseter.getInstance()).build());
 
 				}
 				claimData.clear();

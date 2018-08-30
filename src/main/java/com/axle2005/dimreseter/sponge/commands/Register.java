@@ -13,7 +13,7 @@ import com.axle2005.dimreseter.sponge.DimReseter;
 public class Register {
 
 	public Register(DimReseter plugin, Config config) {
-		CommandSpec add = CommandSpec.builder().permission("dimreset.manage.add")
+		CommandSpec add = CommandSpec.builder().permission("dimreset.admin")
 				.description(Text.of("Add Dim to Config"))
 				.arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("Dim|Here"))))
 				.executor(new CommandDimAdd(plugin, config)).build();
@@ -23,9 +23,9 @@ public class Register {
 				.arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("DIM"))))
 				.executor(new CommandDimReset(plugin)).build();
 
-		CommandSpec dimreset = CommandSpec.builder().description(Text.of("Dimreseter")).child(add, "add").child(reset, "reset")
+		CommandSpec dimreset = CommandSpec.builder().description(Text.of("dimreseter")).child(add, "add").child(reset, "reset")
 				.build();
 
-		Sponge.getCommandManager().register(plugin, dimreset, "DimReseter","ToastyReset");
+		Sponge.getCommandManager().register(plugin, dimreset, "dimreseter","toastyreset");
 	}
 }

@@ -9,6 +9,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
@@ -50,7 +51,7 @@ public class CommandDimReset implements CommandExecutor {
 					for (Claim c : cm.getWorldClaims()) {
 						if(c.isAdminClaim()) {
 							src.sendMessage(Text.of(TextColors.AQUA,"Claim: "+c.getUniqueId()+" has been deleted"));
-							cm.deleteClaim(c);
+							cm.deleteClaim(c, Cause.source(DimReseter.getInstance()).build());
 						}
 					}
 				}
