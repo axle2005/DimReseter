@@ -1,23 +1,28 @@
 package com.axle2005.dimreseter.common;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.WorldArchetypes;
 
 import com.axle2005.dimreseter.sponge.DimReseter;
 import com.axle2005.dimreseter.sponge.Region;
+import com.axle2005.dimreseter.sponge.Util;
 
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.api.claim.ClaimManager;
 
 public class FileUtil {
 
-	
+	private static List<String> dataFiles = new ArrayList<String>(Arrays.asList("EndCity.dat","MagmaIslands.dat","Stronghold.dat","Mineshaft.dat","Temple.dat","TFFeature.dat","TFHollowTree.dat","SlimeIslands.dat","villages_twilightforest.dat"));
 	
 	public static File[] getRegions(File worldFolder) {
 		
@@ -54,9 +59,9 @@ public class FileUtil {
 		//String directory = world.getDirectory().toString();
 		//String newPath = directory+ File.separator + "region";
 		
-		if (DimReseter.getInstance().isGPPresent()) {
+		if (Util.isGPPresent()) {
 			
-			ClaimManager cm = DimReseter.getInstance().getGPApi().getClaimManager(world);
+			ClaimManager cm = Util.getGPApi().getClaimManager(world);
 			for (Claim cl : cm.getWorldClaims()) {
 				for(Chunk ch : cl.getChunks()) {
 					if(!claimRegions.contains(Region.getRegionFromChunk(ch.getPosition()))) {
@@ -78,7 +83,7 @@ public class FileUtil {
 				
 				File currentFile = new File(location.getPath(), f);
 				if (currentFile.lastModified() < oldestTime) {
-					if(DimReseter.getInstance().isGPPresent()) {
+					if(Util.isGPPresent()) {
 						if(!claimRegions.contains(currentFile.getName())) {
 							regions.add(currentFile);
 						}
@@ -112,6 +117,7 @@ public class FileUtil {
 		
 	}
 	
+	
 	public static void clearData(String path) {
 		String newPath = path + File.separator +"data";
 		File location = new File(newPath);
@@ -119,10 +125,10 @@ public class FileUtil {
 			String[] entries = location.list();
 			for (String s : entries) {
 				File currentFile = new File(location.getPath(), s);
-				if (currentFile.getName().equals("villages_end.dat")
-						|| currentFile.getName().equals("villages_nether.dat")
-						|| currentFile.getName().equals("EndCity.dat")) {
+				if(dataFiles.contains(currentFile.getName()) || currentFile.getName().contains("villages_")){
 					currentFile.delete();
+				}
+					
 				}
 
 			}
@@ -131,4 +137,4 @@ public class FileUtil {
 	}
 		
 	
-}
+

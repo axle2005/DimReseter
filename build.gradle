@@ -25,5 +25,5 @@ dependencies {
         exclude module: 'testplugins'
 	}
     compile "org.bstats:bstats-sponge:1.2"
-    compile ("me.ryanhamshire:griefprevention:$minecraftVersion-$griefpreventionVersion:api")
+    compileOnly ("me.ryanhamshire:griefprevention:$minecraftVersion-$griefpreventionVersion")
 }

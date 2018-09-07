@@ -1,6 +1,7 @@
 package com.axle2005.dimreseter.sponge;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,19 +9,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -28,8 +29,6 @@ import com.axle2005.dimreseter.common.FileUtil;
 import com.axle2005.dimreseter.sponge.commands.Register;
 import com.google.inject.Inject;
 
-import me.ryanhamshire.griefprevention.GriefPrevention;
-import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
@@ -50,9 +49,6 @@ public class DimReseter {
 	File location;
 	Config mainConfig;
 
-	// Used to clear claims from reset dimensions
-	private static GriefPreventionApi gpApi;
-	private Boolean gpPresent = false;
 
 	List<String> listRestartDims = new ArrayList<String>();
 	public List<String> listMonthlyDims = new ArrayList<String>();
@@ -66,10 +62,29 @@ public class DimReseter {
 	private static DimReseter instance;
 
 	@Listener
-	public void initialization(GameInitializationEvent event) {
+	public void preInitialize(GamePreInitializationEvent event) {
+			
+			try {
+				String fakePath = Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "spareEnd";
+				String newPath = Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "DIM1";
+				FileUtils.copyDirectory(new File(fakePath+File.separator+"region"), new File(newPath+File.separator+"region"));
+				FileUtils.copyFile(new File(fakePath+File.separator+"level.dat"), new File(newPath+File.separator+"level.dat"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		
+		
+	}
+
+	@Listener(order = Order.LAST)
+	public void onServerStart(GameStartedServerEvent event){
 		
 		instance = this;
 
+	
+		
 		mainConfig = new Config(this, defaultConfig, mainManager, "dimreseter.conf");
 
 		listRestartDims = mainConfig.getStringlist("EveryRestartReset");
@@ -77,17 +92,8 @@ public class DimReseter {
 		listVoidWorlds = mainConfig.getVoidlist();
 		voids = mainConfig.getNodeChildBoolean("CustomGenerators", "Enabled");
 		new Register(this, mainConfig);
-	}
-
-	@Listener(order = Order.LAST)
-	public void onServerStart(GameStartedServerEvent event) throws Exception {
-		Optional<PluginContainer> optGpContainer = Sponge.getPluginManager().getPlugin("griefprevention");
-		if (optGpContainer.isPresent()) {
-			gpApi = GriefPrevention.getApi();
-			log.info("Loaded GriefPrevention API");
-			gpPresent = true;
-
-		}
+		
+		
 		// Can not spawn platform in this event. Worlds are not loaded.
 
 		if ((mainConfig.getNodeInt("ResetDay") == (Integer.valueOf(ft.format(dNow)))
@@ -101,13 +107,15 @@ public class DimReseter {
 							Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "" + dim);
 					FileUtil.clearData(
 							Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "" + dim);
-				}
 
-				if (this.isGPPresent()) {
+				}
+				
+				if (Util.isGPPresent()) {
 					Util.clearClaims(dim);
 				}
 
 				Util.spawnPlatform(dim);
+				
 
 				log.info(dim + " has been reset");
 			}
@@ -125,10 +133,11 @@ public class DimReseter {
 						Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "" + dim);
 				FileUtil.clearData(
 						Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "" + dim);
+				
 				getLogger().info("Reset Dim: " + dim);
 			}
 
-			if (this.isGPPresent()) {
+			if (Util.isGPPresent()) {
 				Util.clearClaims(dim);
 			}
 
@@ -142,6 +151,15 @@ public class DimReseter {
 				setCustomModifier(dim);
 			}
 		}
+		
+		
+		try {
+			Sponge.getServer().createWorldProperties("spareEnd", WorldArchetypes.THE_END).setGenerateSpawnOnLoad(true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 
 	}
 
@@ -154,7 +172,7 @@ public class DimReseter {
 			Sponge.getServer().unloadWorld(world);
 			WorldProperties properties = Sponge.getServer().getWorldProperties(w[0]).get();
 			Collection<WorldGeneratorModifier> gen = new ArrayList<WorldGeneratorModifier>();
-
+			
 			try {
 				WorldGeneratorModifier e = Sponge.getRegistry().getType(WorldGeneratorModifier.class, w[1]).get();
 				gen.add(e);
@@ -174,13 +192,7 @@ public class DimReseter {
 		return log;
 	}
 
-	public GriefPreventionApi getGPApi() {
-		return gpApi;
-	}
 
-	public Boolean isGPPresent() {
-		return gpPresent;
-	}
 
 	public List<String> getVoidList() {
 		return listVoidWorlds;

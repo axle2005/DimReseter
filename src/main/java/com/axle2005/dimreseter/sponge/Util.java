@@ -1,5 +1,6 @@
 package com.axle2005.dimreseter.sponge;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,16 +10,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.flowpowered.math.vector.Vector3i;
 
+import me.ryanhamshire.griefprevention.GriefPrevention;
+import me.ryanhamshire.griefprevention.api.GriefPreventionApi;
 import me.ryanhamshire.griefprevention.api.claim.Claim;
 import me.ryanhamshire.griefprevention.api.claim.ClaimManager;
 
 public class Util {
 
 	static Map<UUID, Claim> claimData = new ConcurrentHashMap<>();
+	
 	
 	public static void spawnPlatform(String dimname) {
 		if(Sponge.getServer().getWorld(dimname).isPresent())
@@ -43,7 +48,7 @@ public class Util {
 				plat[8] = new Vector3i(x + 1, y - 2, z - 1);
 
 			}
-
+			
 			for (Vector3i v : plat) {
 
 				world.getLocation(v).setBlockType(BlockTypes.BEDROCK);
@@ -54,11 +59,13 @@ public class Util {
 
 	}
 	
+
+	
 	public static void clearClaims(String dim) {
 			Optional<World> world = Sponge.getServer().getWorld(dim);
 			if (world.isPresent()) {
 				World w = world.get();
-				ClaimManager cm = DimReseter.getInstance().getGPApi().getClaimManager(w);
+				ClaimManager cm = getGPApi().getClaimManager(w);
 				List<Claim> claims = cm.getWorldClaims();
 				for (Claim c : claims) {
 
@@ -76,6 +83,17 @@ public class Util {
 			}
 			DimReseter.getInstance().getLogger().info("Deleted Claims in Dim: " + dim);
 		}
+	
+	public static GriefPreventionApi getGPApi() {
+		
+
+		
+		return GriefPrevention.getApi();
+	}
+
+	public static Boolean isGPPresent() {
+		return true;
+	}
 	
     
 }

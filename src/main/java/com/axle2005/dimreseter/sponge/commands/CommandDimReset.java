@@ -45,8 +45,8 @@ public class CommandDimReset implements CommandExecutor {
 				}
 				Sponge.getServer().unloadWorld(world.get());
 				
-				if (DimReseter.getInstance().isGPPresent()) {
-					ClaimManager cm = DimReseter.getInstance().getGPApi().getClaimManager(world.get());
+				if (Util.isGPPresent()) {
+					ClaimManager cm = Util.getGPApi().getClaimManager(world.get());
 					for (Claim c : cm.getWorldClaims()) {
 						if(c.isAdminClaim()) {
 							src.sendMessage(Text.of(TextColors.AQUA,"Claim: "+c.getUniqueId()+" has been deleted"));
