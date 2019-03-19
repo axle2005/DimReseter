@@ -27,3 +27,10 @@ dependencies {
     compile "org.bstats:bstats-sponge:1.2"
     compileOnly ("me.ryanhamshire:griefprevention:$minecraftVersion-$griefpreventionVersion")
 }
+apply plugin: "signing"
+
+signing {
+    required { project.hasProperty("signing.keyId") && project.hasProperty("signing.password") && project.hasProperty("signing.secretKeyRingFile") }
+
+    sign configurations.archives
+}

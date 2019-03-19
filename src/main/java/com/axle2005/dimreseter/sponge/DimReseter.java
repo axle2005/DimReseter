@@ -61,23 +61,6 @@ public class DimReseter {
 
 	private static DimReseter instance;
 
-	@Listener
-	public void preInitialize(GamePreInitializationEvent event) {
-			
-			try {
-				String fakePath = Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "spareEnd";
-				String newPath = Sponge.getGame().getGameDirectory() + File.separator + "world" + File.separator + "DIM1";
-				FileUtils.copyDirectory(new File(fakePath+File.separator+"region"), new File(newPath+File.separator+"region"));
-				FileUtils.copyFile(new File(fakePath+File.separator+"level.dat"), new File(newPath+File.separator+"level.dat"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		
-		
-	}
-
 	@Listener(order = Order.LAST)
 	public void onServerStart(GameStartedServerEvent event){
 		
