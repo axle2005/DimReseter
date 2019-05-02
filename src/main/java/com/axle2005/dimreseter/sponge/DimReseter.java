@@ -1,42 +1,38 @@
 package com.axle2005.dimreseter.sponge;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import org.apache.commons.io.FileUtils;
+import com.axle2005.dimreseter.common.FileUtil;
+import com.axle2005.dimreseter.sponge.commands.Register;
+import com.google.inject.Inject;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.axle2005.dimreseter.common.FileUtil;
-import com.axle2005.dimreseter.sponge.commands.Register;
-import com.google.inject.Inject;
+import java.io.File;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-
-@Plugin(id = "dimreseter", name = "DimReseter", version = "1.12-1.0.2")
+@Plugin(id = "dimreseter", name = "DimReseter", version = "1.12.2-1.0.2")
 public class DimReseter {
 
 	@Inject
 	private Logger log;
+
+	@Inject
+	private PluginContainer pluginContainer;
+
+
 
 	@Inject
 	@ConfigDir(sharedRoot = false)
@@ -65,6 +61,7 @@ public class DimReseter {
 	public void onServerStart(GameStartedServerEvent event){
 		
 		instance = this;
+		getLogger().info(UpdateChecker.checkRecommended(pluginContainer));
 
 	
 		
@@ -73,7 +70,7 @@ public class DimReseter {
 		listRestartDims = mainConfig.getStringlist("EveryRestartReset");
 		listMonthlyDims = mainConfig.getStringlist("EveryMonthReset");
 		listVoidWorlds = mainConfig.getVoidlist();
-		voids = mainConfig.getNodeChildBoolean("CustomGenerators", "Enabled");
+		//voids = mainConfig.getNodeChildBoolean("CustomGenerators", "Enabled");
 		new Register(this, mainConfig);
 		
 		
@@ -128,20 +125,20 @@ public class DimReseter {
 
 		}
 
-		if (voids == true) {
+		/*if (voids == true) {
 			for (String dim : listVoidWorlds) {
 
 				setCustomModifier(dim);
 			}
-		}
+		}*/
 		
 		
-		try {
+		/*try {
 			Sponge.getServer().createWorldProperties("spareEnd", WorldArchetypes.THE_END).setGenerateSpawnOnLoad(true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 
 	}

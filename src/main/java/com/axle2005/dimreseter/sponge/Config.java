@@ -88,14 +88,14 @@ public class Config {
 
 			rootnode.getNode("ResetToday").setComment("Has the server reset today?").setValue(false);
 		}
-		if (rootnode.getNode("CustomGenerators","Enabled").isVirtual()) {
+		/*if (rootnode.getNode("CustomGenerators","Enabled").isVirtual()) {
 
 			rootnode.getNode("CustomGenerators","Enabled").setComment("If Enabled, any worlds in list will apply the new world gen when reset").setValue(false);
 		}
 		if (rootnode.getNode("CustomGenerators","List").isVirtual()) {
 
 			rootnode.getNode("CustomGenerators","List").setComment("Any Worlds In this List will Generate with Custom World Gen").setValue(listCustomGen);
-		}
+		}*/
 	}
 
 	public List<String> getStringlist(String node) {
@@ -114,14 +114,14 @@ public class Config {
 	public List<String> getVoidlist() {
 
 		List<String> listTemp = new ArrayList<String>();
-		try {
+		/*try {
 			for (String list : rootnode.getNode("CustomGenerators","List").getList(TypeToken.of(String.class))) {
 				
 				listTemp.add(list);
 			}
 		} catch (ObjectMappingException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		return listTemp;
 	}
